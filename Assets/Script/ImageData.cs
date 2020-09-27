@@ -59,4 +59,24 @@ public class ImageData : MonoBehaviour
         return res;
     }
 
+    public Vector2[,] NearbyCameraPos(float x, float y, int size)
+    {
+
+        if ((size & 1) == 1)
+            return null;
+        Vector2[,] res = new Vector2[size, size];
+        int halfSize = size >> 1;
+
+        int lowerX = Mathf.FloorToInt(x), lowerY = Mathf.FloorToInt(y);
+
+        for (int i = 0; i < size; ++i)
+            for (int j = 0; j < size; ++j)
+            {
+                int qX = lowerX + i - (halfSize - 1), qY = lowerY + j - (halfSize - 1);
+                res[i, j] = new Vector2(qX, qY);
+            }
+
+        return res;
+    }
+
 }

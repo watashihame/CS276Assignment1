@@ -2344,6 +2344,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   imageData: {fileID: 1541831341}
   outPut: {fileID: 2146103647}
+  uvTost: 1
+  u: 8.5
+  v: 8.5
+  z: 5
+  aperture: 2
+  curMethod: 0
 --- !u!1 &1575226675
 GameObject:
   m_ObjectHideFlags: 0
