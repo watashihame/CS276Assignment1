@@ -49,7 +49,7 @@ public class GameManager : MonoBehaviour
 
     private void Start()
     {
-        outPut.ChangeImage(NaiveReconstraction());
+        //outPut.ChangeImage(NaiveReconstraction());
         //outPut.ChangeImage(imageData[0, 0]);
     }
 
@@ -59,18 +59,26 @@ public class GameManager : MonoBehaviour
         float dv = Input.GetAxis("Vertical");
         float dz = Input.GetAxis("Mouse ScrollWheel") * movingSpeed;
         float da = Input.GetAxis("Aprture");
+        if (Input.GetButtonDown("Naive"))
+            UsingNaive();
+        if (Input.GetButtonDown("FocalPlane"))
+            UsingAdvanced();
+        if (Input.GetButtonDown("Qudra"))
+            interpolator = new QuadraInterpolator();
+        if (Input.GetButtonDown("Gaussian"))
+            interpolator = new GaussianInterpolator();
         //Debug.Log(du.ToString() + " " + dv.ToString());
         // We think it move enough
         //if (Mathf.Abs(du) > .0f || Mathf.Abs(dv) > .0f || Mathf.Abs(dz) > .0f)
         {
-            u -= dv;
-            v -= du;
+            u += du;
+            v += dv;
             z += dz;
             aperture += da;
-            u = Mathf.Clamp(u, .0f, 15.0f);
-            v = Mathf.Clamp(v, .0f, 15.0f);
+            u = Mathf.Clamp(u, 8.0f, 9.0f);
+            v = Mathf.Clamp(v, 8.0f, 9.0f);
             z = Mathf.Clamp(z, -320.0f, 320.0f);
-            aperture = Mathf.Clamp(aperture, 2.0f, 16.0f);
+            aperture = Mathf.Clamp(aperture, 0.5f, 1.4f);
 
             switch(curMethod)
             {
@@ -91,13 +99,15 @@ public class GameManager : MonoBehaviour
         Texture2D res = new Texture2D(imageData.filmSize.x, imageData.filmSize.y, TextureFormat.RGBA32, false);
 
         Texture2D[,] nearby = imageData.NearbyCameraData(u, v, 2);
+        Vector4 queryRay = new Vector2(u, v);
+
+        interpolator.Update(.0f, 0.5f, 2, queryRay);
 
         //Debug.Log(new Vector2(u, v));
 
         for (int s = 0; s < res.width; ++s)
             for (int t = 0; t < res.height; ++t)
             {
-                Vector4 queryRay = new Vector2(u, v);
                 Color rayColor = interpolator.Interpolate(queryRay, new Vector2Int(s, t), nearby);
                 rayColor.a = 1.0f;
 
@@ -110,20 +120,26 @@ public class GameManager : MonoBehaviour
     Texture2D AdvancedReconstraction()
     {
         Texture2D res = new Texture2D(imageData.filmSize.x, imageData.filmSize.y, TextureFormat.RGBA32, false);
-
-        Texture2D[,] nearby = imageData.NearbyCameraData(u, v, Mathf.RoundToInt(aperture));
-        Vector2[,] nearbyPos = imageData.NearbyCameraPos(u, v, Mathf.RoundToInt(aperture));
+        Texture2D[,] nearby = null;
+        Vector2 queryRay = new Vector2(u, v);
+        if (interpolator.GetType() == typeof(QuadraInterpolator))
+        {
+            nearby = imageData.NearbyCameraData(u, v, 2);
+            interpolator.Update(z, aperture, 2, queryRay);
+        }
+        else
+        {
+            nearby = imageData.NearbyCameraData(u, v, 4);
+            interpolator.Update(z, aperture, 4, queryRay);
+        }
 
         // notice z is focal dis
         //Debug.Log(z);
 
-        interpolator.disparaty = z;
-
         for (int s = 0; s < res.width; ++s)
             for (int t = 0; t < res.height; ++t)
             {
-                Vector4 queryRay = new Vector2(u, v);
-                Color rayColor = interpolator.Interpolate(queryRay, new Vector2Int(s, t), aperture, nearby);
+                Color rayColor = interpolator.Interpolate(queryRay, new Vector2Int(s, t), nearby);
                 rayColor.a = 1.0f;
                 res.SetPixel(s, t, rayColor);
             }
@@ -134,7 +150,6 @@ public class GameManager : MonoBehaviour
     public void UsingNaive()
     {
         curMethod = ReconstractionMethod.Naive;
-        interpolator.disparaty = 0.0f;
     }
 
     public void UsingAdvanced()

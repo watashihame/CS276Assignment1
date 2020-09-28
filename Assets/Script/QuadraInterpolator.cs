@@ -16,10 +16,10 @@ public class QuadraInterpolator : Interpolator
         Vector2 uv10 = new Vector2(u1, v0);
         Vector2 uv11 = new Vector2(u1, v1);
 
-        Vector2 st00 = disparaty * Vector2.Scale(new Vector2(0.75f, 1.0f), (uv00 - uv)) + st;
-        Vector2 st10 = -disparaty * Vector2.Scale(new Vector2(0.75f, 1.0f), (uv10 - uv)) + st;
-        Vector2 st01 = -disparaty * Vector2.Scale(new Vector2(0.75f, 1.0f), (uv01 - uv)) + st;
-        Vector2 st11 = disparaty * Vector2.Scale(new Vector2(0.75f, 1.0f), (uv11 - uv)) + st;
+        Vector2 st00 = disparaty * (uv00 - uv) + st;
+        Vector2 st10 = disparaty * (uv10 - uv) + st;
+        Vector2 st01 = disparaty * (uv01 - uv) + st;
+        Vector2 st11 = disparaty * (uv11 - uv) + st;
 
         //Color c000 = Color.Lerp(images[0, 0].GetPixel(Mathf.FloorToInt(st00.x), Mathf.FloorToInt(st00.y)),
         //    images[0, 0].GetPixel(Mathf.FloorToInt(st00.x), Mathf.FloorToInt(st00.y) + 1),
@@ -68,8 +68,4 @@ public class QuadraInterpolator : Interpolator
         return resColor;
     }
 
-    public override Color Interpolate(Vector2 uv, Vector2Int st, float size, Texture2D[,] images)
-    {
-        return Interpolate(uv, st, images);
-    }
 }

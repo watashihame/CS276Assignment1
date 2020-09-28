@@ -13,10 +13,11 @@ public class ImageData : MonoBehaviour
     {
         for (int i=0;i<256;++i)
         {
-            images[i] = Resources.Load<Texture2D>(string.Format("Images/lowtoys{0:D3}", i + 1));
+            int imageIdx = ((i >> 4) << 4) + (16 - (i & 15));
+            images[i] = Resources.Load<Texture2D>(string.Format("Images/lowtoys{0:D3}", imageIdx));
             //if(images[i] != null)
             //{
-            //    Debug.Log("Loaded: " + string.Format("Images/lowtoys{0:D3}", i + 1));
+            //Debug.Log("Loaded: " + string.Format("Images/lowtoys{0:D3} as Idx {1}", imageIdx, i));
             //}
             filmRes.x = images[i].width;
             filmRes.y = images[i].height;
@@ -25,8 +26,8 @@ public class ImageData : MonoBehaviour
 
     public Texture2D this [int i, int j]
     {
-        get { return images[i * 16 + j]; }
-        set { images[i * 16 + j] = value; }
+        get { return images[15 - i + j * 16]; }
+        set { images[15 - i + j * 16] = value; }
     }
 
     public Vector2Int filmSize
