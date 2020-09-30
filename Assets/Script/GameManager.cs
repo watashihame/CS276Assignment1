@@ -27,9 +27,11 @@ public class GameManager : MonoBehaviour
     [SerializeField]
     float z = 2.0f;
     [SerializeField]
+    float imageSize = 1.0f;
+    [SerializeField]
     float aperture = 2.0f;
 
-    Texture2D image;
+    //Texture2D image;
 
     Interpolator interpolator = new QuadraInterpolator();
 
@@ -57,8 +59,9 @@ public class GameManager : MonoBehaviour
     {
         float du = Input.GetAxis("Horizontal");
         float dv = Input.GetAxis("Vertical");
-        float dz = Input.GetAxis("Mouse ScrollWheel") * movingSpeed;
+        float dz = Input.GetAxis("Mouse ScrollWheel");
         float da = Input.GetAxis("Aprture");
+        float ds = Input.GetAxis("Size");
         if (Input.GetButtonDown("Naive"))
             UsingNaive();
         if (Input.GetButtonDown("FocalPlane"))
@@ -69,23 +72,25 @@ public class GameManager : MonoBehaviour
             interpolator = new GaussianInterpolator();
         //Debug.Log(du.ToString() + " " + dv.ToString());
         // We think it move enough
-        //if (Mathf.Abs(du) > .0f || Mathf.Abs(dv) > .0f || Mathf.Abs(dz) > .0f)
+        if (Mathf.Abs(du) > .0f || Mathf.Abs(dv) > .0f || Mathf.Abs(da) > .0f || Mathf.Abs(dz) > .0f || Mathf.Abs(ds) > .0f)
         {
             u += du;
             v += dv;
             z += dz;
             aperture += da;
+            imageSize += ds;
             u = Mathf.Clamp(u, 8.0f, 9.0f);
             v = Mathf.Clamp(v, 8.0f, 9.0f);
             z = Mathf.Clamp(z, -320.0f, 320.0f);
             aperture = Mathf.Clamp(aperture, 0.5f, 1.4f);
+            imageSize = Mathf.Clamp(imageSize, 1.0f, 16.0f);
 
             switch(curMethod)
             {
                 case ReconstractionMethod.Naive: outPut.ChangeImage(NaiveReconstraction()); break;
                 case ReconstractionMethod.Advanced: outPut.ChangeImage(AdvancedReconstraction()); break;
             }
-            
+            outPut.ChangeSize(imageSize);
 
             // update image
         }

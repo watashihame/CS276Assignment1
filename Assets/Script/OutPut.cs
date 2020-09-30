@@ -24,4 +24,9 @@ public class OutPut : MonoBehaviour
     {
         infoText.text = string.Format("Camera Pos {0} {1}", infoVal[0].ToString("#.00"), infoVal[1].ToString("#.00"));
     }
+
+    public void ChangeSize(float value)
+    {
+        image.rectTransform.sizeDelta = value * new Vector2(640,480); 
+    }
 }
