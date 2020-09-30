@@ -79,10 +79,10 @@ public class GameManager : MonoBehaviour
             z += dz;
             aperture += da;
             imageSize += ds;
-            u = Mathf.Clamp(u, 8.0f, 9.0f);
-            v = Mathf.Clamp(v, 8.0f, 9.0f);
+            u = Mathf.Clamp(u, 0.0f, 15.0f);
+            v = Mathf.Clamp(v, 0.0f, 15.0f);
             z = Mathf.Clamp(z, -320.0f, 320.0f);
-            aperture = Mathf.Clamp(aperture, 0.5f, 1.4f);
+            aperture = Mathf.Clamp(aperture, 0.5f, 2.0f);
             imageSize = Mathf.Clamp(imageSize, 1.0f, 16.0f);
 
             switch(curMethod)
